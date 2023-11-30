@@ -113,9 +113,16 @@ public class HistoryService {
 	 */
 	public void deleteHistory(int historyId) {
 		History del = historyRepo.getReferenceById((long) historyId);
+	
+		//返却する履歴ID内のステータスが”F”だったらincrementStockで在庫数を更新する
+		if(del.getReturned().equals("F")) {
+			int bookId = del.getBooks().getBookId();
+			this.incrementStock(bookId);
+		}
 		historyRepo.delete(del);
 	}
 
+	//返却時の在庫を増やす処理
 	private void incrementStock(int bookId) {
 		Books book = booksRepo.getReferenceById((long) bookId);
 		int stock = book.getStock();
@@ -125,7 +132,8 @@ public class HistoryService {
 		}
 		booksRepo.save(book);
 	}
-
+	
+	//貸出時に本を減らす処理
 	private void decrementStock(int bookId) {
 		Books book = booksRepo.getReferenceById((long) bookId);
 		int stock = book.getStock();
@@ -159,6 +167,8 @@ public class HistoryService {
 		
 		//返却ステータスは文字として入れる
 		history.setReturned("T");
+		//返却の際にhistoryからBooksとBookIdを取得してincrementStockに処理をおくって格納する
+		this.incrementStock(history.getBooks().getBookId());
 		
 		historyRepo.save(history);
 	}
@@ -186,7 +196,8 @@ public class HistoryService {
 		history.setCheckoutDate(coDate);
 		history.setDueDate(dueDate);
 		history.setReturned("F");
-		
+		//貸出の際にhistoryからBooksとBookIdを取得してdecrementStockに格納する
+		this.decrementStock(history.getBooks().getBookId());
 		historyRepo.save(history);
 		
 	}
