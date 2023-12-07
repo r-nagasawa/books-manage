@@ -77,7 +77,12 @@ function sortRows() {
       if (record.key) chkValue = record.key; 
       records.push(record);
     }
-    if (!isNaN(chkValue) && chkValue) isNum = true;
+    //thisが電話列かどうか確認する
+    if(this.cellIndex == 3){
+		isNum = false;
+	}else if (!isNaN(chkValue) && chkValue) {
+		isNum = true;
+	}
     //console.log(isNum);
     if (this.classList.contains('sort-asc')) {
 	  if(isNum) records.sort(compareKeysReverseNum);
@@ -115,9 +120,17 @@ function sortRows() {
   }
  
   function compareKeysReverseNum(a, b) {
+	/*if (a.key < b.key) return -1;
+    if (a.key > b.key) return 1;
+    return 0;*/
     return b.key - a.key;
   }
   
   function compareKeysNum(a, b) {
+	/*if (a.key < b.key) return 1;
+    if (a.key > b.key) return -1;
+    return 0;*/
     return a.key - b.key;
   }
+  
+  //電話クリック時のchkValueがisNumber=trueになると、記号入りのが動かなくなる
